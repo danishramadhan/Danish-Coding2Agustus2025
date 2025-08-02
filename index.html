@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animasi Bunga|Danish</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            color: #6a3093;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Styling for animated flowers */
+        .flower {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .flower-center {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ffeb3b;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 235, 59, 0.7);
+        }
+        
+        .petal {
+            position: absolute;
+            width: 40px;
+            height: 20px;
+            border-radius: 20px;
+            background: linear-gradient(to bottom, #ff8a80, #e53935);
+            transform-origin: center 50px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Floating animation */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+        
+        /* Falling animation */
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(180deg);
+            }
+        }
+        
+        /* Blooming animation */
+        @keyframes bloom {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Control buttons */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #6a3093;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #4a1c65;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Animasi Bunga | Danish</h1>
+        
+        <div class="controls">
+            <button id="addFlower">Tambah Bunga </button>
+            <button id="removeFlower">Hapus Bunga</button>
+            <button id="toggleAnimation">Hujan Bunga</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            const addBtn = document.getElementById('addFlower');
+            const removeBtn = document.getElementById('removeFlower');
+            const toggleBtn = document.getElementById('toggleAnimation');
+            let flowers = [];
+            let isRaining = false;
+            let rainingInterval;
+            
+            // Flower colors
+            const colors = [
+                'linear-gradient(to bottom, #ff8a80, #e53935)',
+                'linear-gradient(to bottom, #80d8ff, #0288d1)',
+                'linear-gradient(to bottom, #b388ff, #7c4dff)',
+                'linear-gradient(to bottom, #ffd180, #f57c00)',
+                'linear-gradient(to bottom, #a7ffeb, #00bfa5)',
+                'linear-gradient(to bottom, #ff80ab, #c51162)'
+            ];
+            
+            // Create a flower
+            function createFlower(x, y) {
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                
+                // Position the flower
+                flower.style.left = x + 'px';
+                flower.style.top = y + 'px';
+                
+                // Create flower center
+                const center = document.createElement('div');
+                center.className = 'flower-center';
+                flower.appendChild(center);
+                
+                // Create petals (8 petals)
+                for (let i = 0; i < 8; i++) {
+                    const petal = document.createElement('div');
+                    petal.className = 'petal';
+                    petal.style.transform = `rotate(${i * 45}deg)`;
+                    petal.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    flower.appendChild(petal);
+                }
+                
+                // Add animation
+                flower.style.animation = 'float 3s ease-in-out infinite';
+                
+                container.appendChild(flower);
+                flowers.push(flower);
+                
+                return flower;
+            }
+            
+            // Create a simple falling flower
+            function createFallingFlower() {
+                const fallingFlower = document.createElement('div');
+                fallingFlower.className = 'flower';
+                
+                // Random position and size
+                const randomSize = Math.random() * 30 + 20;
+                const randomX = Math.random() * window.innerWidth;
+                
+                fallingFlower.style.width = randomSize + 'px';
+                fallingFlower.style.height = randomSize + 'px';
+                fallingFlower.style.left = randomX + 'px';
+                fallingFlower.style.top = '-50px';
+                
+                // Simple round flower
+                fallingFlower.style.borderRadius = '50%';
+                fallingFlower.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Falling animation
+                fallingFlower.style.animation = 'fall ' + (Math.random() * 3 + 3) + 's linear forwards';
+                
+                // Remove after animation completes
+                setTimeout(() => {
+                    fallingFlower.remove();
+                }, 5000);
+                
+                container.appendChild(fallingFlower);
+            }
+            
+            // Start/stop flower rain
+            function toggleFlowerRain() {
+                if (isRaining) {
+                    clearInterval(rainingInterval);
+                    isRaining = false;
+                    toggleBtn.textContent = 'Start Rain';
+                } else {
+                    rainingInterval = setInterval(createFallingFlower, 300);
+                    isRaining = true;
+                    toggleBtn.textContent = 'Stop Rain';
+                }
+            }
+            
+            // Event listeners
+            addBtn.addEventListener('click', function() {
+                const x = Math.random() * (window.innerWidth - 100) + 50;
+                const y = Math.random() * (window.innerHeight - 100) + 50;
+                createFlower(x, y);
+            });
+            
+            removeBtn.addEventListener('click', function() {
+                if (flowers.length > 0) {
+                    const flower = flowers.pop();
+                    flower.remove();
+                }
+            });
+            
+            toggleBtn.addEventListener('click', toggleFlowerRain);
+            
+            // Click to add flower
+            container.addEventListener('click', function(e) {
+                if (e.target === container) {
+                    createFlower(e.clientX, e.clientY);
+                }
+            });
+            
+            // Create initial flowers
+            for (let i = 0; i < 5; i++) {
+                const x = Math.random() * (window.innerWidth - 100) + 50;
+                const y = Math.random() * (window.innerHeight - 100) + 50;
+                createFlower(x, y).style.animationDelay = Math.random() * 2 + 's';
+            }
+        });
+    </script>
+</body>
+</html>
+
